@@ -1,142 +1,169 @@
-# sql_retail_sales_analysis
-# Project Overview
-
-This project demonstrates end-to-end SQL-based data analysis on a retail sales dataset using MySQL. The analysis includes:
-
-Database creation
-
-Data cleaning
-
-Data exploration
-
-Business-focused analytical queries
-
-Time-based and customer-based insights
-
-This project is suitable for beginner to intermediate SQL learners and can be used as a portfolio project for Data Analyst roles.
-
-# Database & Table
-
-Database: retail
-
-Main Table: retail_sales
-
-# Key Columns in Dataset:
-
-transactions_id – Unique transaction ID
-
-sale_date – Date of sale
-
-sale_time – Time of sale
-
-customer_id – Unique customer ID
-
-gender – Customer gender
-
-age – Customer age
-
-category – Product category
-
-quantiy – Quantity purchased
-
-price_per_unit – Price per unit
-
-cogs – Cost of goods sold
-
-total_sale – Total sales value
-
-# Data Cleaning Performed
-
-The following steps were applied before analysis:
-
-Created and selected the database
-
-Renamed table to retail_sales
-
-Fixed encoding issue in column name (ï»¿transactions_id → transactions_id)
-
-Checked for NULL values across all important columns
-
-Removed records containing NULL values
-
-# Data Exploration
-
-Basic exploratory queries include:
-
-Total number of sales
-
-Total number of customers
-
-Number of unique customers
-
-Number of unique product categories
-
-List of distinct categories
-
-# Key Business Analysis Performed
-# Sample Analytical Questions Answered:
-
-1. Retrieve all sales made on 2022-11-05
-
-2. Find transactions where:
-
-Category = Clothing
-
-Quantity > 2
-
-Month = November 2022
-
-3. Calculate total sales per category
-
-4. Find average age of customers who bought Beauty products
-
-5. Retrieve all transactions where total_sale > 1000
-
-6. Count transactions by gender per category
-
-7. Identify best-selling month per year based on average sales
-
-8. Find top 5 customers by total spending
-
-9. Count unique customers per category
-
-10. Categorize sales into shifts:
-
-Morning (Before 12 PM)
-
-Afternoon (12–5 PM)
-
-Evening (After 5 PM)
-
-# Tools Used
-
-Database: MySQL
-
-Query Language: SQL
-
-# How to Run This Project
-
-Create and use database:
-
 CREATE DATABASE retail;
 
-USE retail;
+USE retail; 
+
+SHOW TABLES;
+SET SQL_SAFE_UPDATES = 0;
+SELECT * 
+FROM `sql - retail sales analysis_utf`;
+
+ALTER TABLE `sql - retail sales analysis_utf`
+RENAME retail_sales;
+
+SELECT * FROM retail_sales;
+
+SELECT COUNT(*) FROM retail_sales;
+
+-- To check NULL Values
+ALTER TABLE retail_sales
+CHANGE `ï»¿transactions_id` transactions_id INT;
+
+-- Data Cleaning
+
+SELECT * FROM retail_sales 
+WHERE transactions_id IS NULL;
+
+SELECT * FROM retail_sales 
+WHERE sale_date IS NULL;
+
+SELECT * FROM retail_sales 
+WHERE 
+transactions_id IS NULL OR
+sale_date IS NULL OR
+sale_time IS NULL OR
+customer_id IS NULL OR
+gender IS NULL OR
+age IS NULL OR
+category IS NULL OR
+quantiy IS NULL OR
+price_per_unit IS NULL OR
+cogs IS NULL OR
+total_sale IS NULL ;
+
+DELETE FROM retail_sales
+WHERE 
+transactions_id IS NULL OR
+sale_date IS NULL OR
+sale_time IS NULL OR
+customer_id IS NULL OR
+gender IS NULL OR
+age IS NULL OR
+category IS NULL OR
+quantiy IS NULL OR
+price_per_unit IS NULL OR
+cogs IS NULL OR
+total_sale IS NULL ;
+
+-- DaTA Exploration
+
+-- How many sales we have
+SELECT COUNT(*) AS total_sales FROM retail_sales ;
+
+-- How many coustomer we have
+SELECT COUNT(customer_id) AS total_sales FROM retail_sales ;
+
+-- How many unique coustomer we have
+SELECT COUNT(DISTINCT customer_id) AS total_sales FROM retail_sales ;
+
+SELECT COUNT(DISTINCT category) AS total_sales FROM retail_sales;
+
+SELECT DISTINCT category FROM retail_sales;
+
+-- DATA ANALYSIS
+
+-- Retrieve all columns for sales made on 2022-11-05
+SELECT * FROM retail_sales
+WHERE sale_date = '2022-11-05';
+
+SELECT COUNT(*) 
+FROM retail_sales 
+WHERE DATE(sale_date) = '2022-11-05';
+
+SELECT *
+FROM retail_sales
+WHERE DATE(sale_date) = '2022-11-05';
+
+-- Retrieve all transactions where the category is ‘Clothing’ and the quantity sold is more than 10 in the month of November 2022.
+
+SELECT * FROM retail_sales
+WHERE category = "clothing" AND 
+quantiy > 2  AND
+sale_date BETWEEN '2022-11-01' AND '2022-11-30';
+
+-- Calculate the total sales (total_sale) for each category.
+
+SELECT COUNT(*) total_sale FROM retail_sales
+GROUP BY category;
+
+SELECT category, SUM(total_sale) -- real answer
+AS total_sales, 
+COUNT(*)
+FROM retail_sales
+GROUP BY category;
+
+-- Find the average age of customers who purchased items from the ‘Beauty’ category.
+
+SELECT AVG(age) AS avg_age
+FROM retail_sales
+WHERE category = "Beauty";
+
+-- Find all transactions where the total_sale is greater than 1000.
+
+SELECT *
+FROM retail_sales
+WHERE total_sale > 1000;
+
+-- Find the total number of transactions (transaction_id) made by each gender in each category.
+
+SELECT gender, category, COUNT(*) AS total_transactions
+FROM retail_sales
+GROUP BY gender, category;
+
+-- Calculate the average sale for each month, and identify the best-selling month in each year.
+
+SELECT year, month, avg_sale
+FROM (
+SELECT 
+YEAR(sale_date) AS year,
+MONTH(sale_date) AS month,
+AVG(total_sale) AS avg_sale,
+RANK() OVER (
+PARTITION BY YEAR(sale_date)
+ORDER BY AVG(total_sale) DESC
+) AS rnk
+FROM retail_sales
+GROUP BY 
+YEAR(sale_date),
+MONTH(sale_date)
+) t
+WHERE rnk = 1;
+
+-- Find the top 5 customers based on the highest total sales.
+
+SELECT customer_id, 
+SUM(total_sale) AS total_sales
+FROM retail_sales
+GROUP BY customer_id
+ORDER BY total_sales DESC
+LIMIT 5;
+
+-- Find the number of unique customers who purchased items from each category.
+SELECT category,
+COUNT(DISTINCT customer_id) AS unique_customers
+FROM retail_sales
+GROUP BY category;
+
+-- Create shifts based on sale_time and count number of orders per shift
+-- Morning,Afternoon,Evening
+
+SELECT 
+CASE
+WHEN HOUR(sale_time) < 12 THEN 'Morning'
+WHEN HOUR(sale_time) BETWEEN 12 AND 17 THEN 'Afternoon'
+ELSE 'Evening'
+END AS shift,
+COUNT(*) AS total_orders
+FROM retail_sales
+GROUP BY shift;
 
 
-Import your dataset into MySQL
-
-Run queries in the provided SQL file step by step
-
-Analyze outputs and insights
-
-# About
-
-This project was created as part of a SQL Data Analysis Portfolio for demonstrating:
-
-SQL proficiency
-
-Data cleaning skills
-
-Analytical thinking
-
-Business insights from raw data
