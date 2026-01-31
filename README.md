@@ -18,6 +18,7 @@ This project is suitable for beginner to intermediate SQL learners and can be us
 # Database & Table
 
 Database: retail
+
 Main Table: retail_sales
 
 # Key Columns in Dataset:
@@ -75,9 +76,9 @@ List of distinct categories
 # Key Business Analysis Performed
 # Sample Analytical Questions Answered:
 
-Retrieve all sales made on 2022-11-05
+1. Retrieve all sales made on 2022-11-05
 
-Find transactions where:
+2. Find transactions where:
 
 Category = Clothing
 
@@ -85,21 +86,21 @@ Quantity > 2
 
 Month = November 2022
 
-Calculate total sales per category
+3. Calculate total sales per category
 
-Find average age of customers who bought Beauty products
+4. Find average age of customers who bought Beauty products
 
-Retrieve all transactions where total_sale > 1000
+5. Retrieve all transactions where total_sale > 1000
 
-Count transactions by gender per category
+6. Count transactions by gender per category
 
-Identify best-selling month per year based on average sales
+7. Identify best-selling month per year based on average sales
 
-Find top 5 customers by total spending
+8. Find top 5 customers by total spending
 
-Count unique customers per category
+9. Count unique customers per category
 
-Categorize sales into shifts:
+10. Categorize sales into shifts:
 
 Morning (Before 12 PM)
 
@@ -118,6 +119,7 @@ Query Language: SQL
 Create and use database:
 
 CREATE DATABASE retail;
+
 USE retail;
 
 
